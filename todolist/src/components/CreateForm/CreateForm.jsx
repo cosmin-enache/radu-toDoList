@@ -1,25 +1,22 @@
 import './CreateForm.css'
+import { useState } from "react";
 
-function CreateForm ({
-    currentId, 
-    setCurrentId, 
-    inputTitle,
-    setInputTitle, 
-    inputDetails, 
-    setInputDetails, 
-    date, 
-    setDate, 
-    todos, 
-    setTodos,
-    setIncompleteCounter
+function CreateForm({
+    currentId,
+    setCurrentId,
+    date,
+    setDate,
+    todos,
+    setTodos
 }) {
-
+    const [inputTitle, setInputTitle] = useState('');
+    const [inputDetails, setInputDetails] = useState('');
 
     // Disables the entire form
-    function removeForm () {
+    function removeForm() {
 
         let createForm = document.getElementsByClassName('create-form')[0];
-        createForm.classList.remove('visible');        
+        createForm.classList.remove('visible');
         let mainPage = document.getElementById('main-page');
         mainPage.classList.remove('blur');
         mainPage.classList.remove('avoid-clicks');
@@ -35,7 +32,7 @@ function CreateForm ({
         let highPrioInput = document.getElementById('create-new-high');
         let highPrioContainer = document.getElementsByClassName('create-new-prio-high')[0];
 
-        if (lowPrioInput.checked) {   
+        if (lowPrioInput.checked) {
             lowPrioContainer.classList.add('create-new-prio-low-active');
             midPrioContainer.classList.remove('create-new-prio-mid-active');
             highPrioContainer.classList.remove('create-new-prio-high-active');
@@ -50,7 +47,7 @@ function CreateForm ({
             midPrioContainer.classList.remove('create-new-prio-mid-active');
             highPrioContainer.classList.add('create-new-prio-high-active');
         }
-        
+
     }
 
     // Creates the todo object when the form is submitted
@@ -77,33 +74,32 @@ function CreateForm ({
         //The todo is created only if the submitted due date is valid
         let selectedYear = Number(date[0] + date[1] + date[2] + date[3])
 
-        if(selectedYear >= 2022 && selectedYear < 2100){
+        if (selectedYear >= 2022 && selectedYear < 2100) {
             dateWarning.style.visibility = 'hidden';
-            setTodos([...todos, {id: currentId, title : inputTitle, date, details: inputDetails, priority}]);
+            setTodos([...todos, { id: currentId, title: inputTitle, date, details: inputDetails, priority }]);
             setCurrentId(currentId => currentId + 1);
-            setIncompleteCounter(prevIncompleteCounter => prevIncompleteCounter + 1);
             removeForm();
         }
-        else{
+        else {
             dateWarning.style.visibility = 'visible';
         }
-      };
-      //Targets the title selected by the user in the form
-      const inputTitleHandler = e => {
+    };
+    //Targets the title selected by the user in the form
+    const inputTitleHandler = e => {
         setInputTitle(e.target.value)
-      }
+    }
 
-      //Targets the details field
-      const inputDetailsHandler = e => {
+    //Targets the details field
+    const inputDetailsHandler = e => {
         setInputDetails(e.target.value)
-      }
+    }
 
-      //Targets the data selected by the user in the form
-      const dateHandler = e => {
-        if(e.target.value) {setDate(e.target.value)} else {setDate('No due date')}
-      }
+    //Targets the data selected by the user in the form
+    const dateHandler = e => {
+        if (e.target.value) { setDate(e.target.value) } else { setDate('No due date') }
+    }
 
-    return(
+    return (
         <div className="create-form">
             <div className='create-nav'>
                 <h3>Create a new ToDo</h3>
@@ -126,20 +122,20 @@ function CreateForm ({
                             <div className='create-new-prio-butt create-new-prio-low'>
                                 <label className='prio-label' htmlFor="create-new-low">Low</label>
                             </div>
-                            <input onClick={checkIfActive} type="radio" required name="create-new-priority" id="create-new-low" className='create-new-prio-input'/>
+                            <input onClick={checkIfActive} type="radio" required name="create-new-priority" id="create-new-low" className='create-new-prio-input' />
                             <div className='create-new-prio-butt create-new-prio-mid'>
                                 <label className='prio-label' htmlFor="create-new-mid">Mid</label>
                             </div>
-                            <input onClick={checkIfActive} type="radio" required name='create-new-priority' id='create-new-mid' className='create-new-prio-input'/>
+                            <input onClick={checkIfActive} type="radio" required name='create-new-priority' id='create-new-mid' className='create-new-prio-input' />
                             <div className='create-new-prio-butt create-new-prio-high'>
                                 <label className='prio-label' htmlFor="create-new-high">High</label>
                             </div>
-                            <input onClick={checkIfActive} type="radio" required name="create-new-priority" id="create-new-high" className='create-new-prio-input'/>
+                            <input onClick={checkIfActive} type="radio" required name="create-new-priority" id="create-new-high" className='create-new-prio-input' />
                         </div>
                         <div className='create-submit'>
                             <button type='submit'>Add</button>
                         </div>
-                    </div> 
+                    </div>
                 </form>
             </div>
         </div>

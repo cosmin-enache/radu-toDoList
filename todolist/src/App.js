@@ -10,11 +10,10 @@ import { useState, useEffect, useMemo } from 'react';
 function App() {
 
   const localTodos = localStorage.getItem('todos');
-  const localCompleteCounter = localStorage.getItem('completeCounter');
-  const localIncompleteCounter = localStorage.getItem('incompleteCounter');
   const localId = localStorage.getItem('id');
+
   const defaultArr = [{
-    "id" : 1,
+    "id": 1,
     "title": "Brush Teeth",
     "date": "2023-09-15",
     "priority": "mid",
@@ -22,7 +21,7 @@ function App() {
     "checked": false,
   },
   {
-    "id" : 2,
+    "id": 2,
     "title": "Wash the dog",
     "date": "2022-09-18",
     "priority": "low",
@@ -30,7 +29,7 @@ function App() {
     "checked": true,
   },
   {
-    "id" : 3,
+    "id": 3,
     "title": "Homework",
     "date": "2022-09-18",
     "priority": "high",
@@ -38,26 +37,21 @@ function App() {
     "checked": false,
   },
   {
-    "id" : 4,
+    "id": 4,
     "title": "Walk the dog",
     "date": "2022-12-12",
     "priority": "high",
     "details": "details5",
     "checked": true,
   }
-];
-  const defaultCompleteCounter = 2;
-  const defaultIncompleteCounter = 2;
+  ];
   const defaultId = 5;
 
   const [todos, setTodos] = useState(localTodos ? JSON.parse(localTodos) : defaultArr);
-  const [completeCounter, setCompleteCounter] = useState(localCompleteCounter ? JSON.parse(localCompleteCounter) : defaultCompleteCounter);
-  const [incompleteCounter, setIncompleteCounter] = useState(localIncompleteCounter ? JSON.parse(localIncompleteCounter) : defaultIncompleteCounter);
   const [currentId, setCurrentId] = useState(localId ? JSON.parse(localId) : defaultId);
 
   const [selectedFilter, setSelectedFilter] = useState('home');
-  const [inputTitle, setInputTitle] = useState('');
-  const [inputDetails, setInputDetails] = useState('');
+
   const [inputEditTitle, setInputEditTitle] = useState('');
   const [inputEditDetails, setInputEditDetails] = useState('');
   const [date, setDate] = useState();
@@ -72,14 +66,14 @@ function App() {
   let currentDay;
   let currentYear;
 
-  for(let i = 0; i < isoDate.length - 14; i++) {
+  for (let i = 0; i < isoDate.length - 14; i++) {
     isoTodayArr.push(isoDate[i]);
-    currentDay= isoTodayArr.join('').toString();
+    currentDay = isoTodayArr.join('').toString();
   }
 
   // Adds a current month property to each todo object used in later comparison
-  for(let i = 0; i < todos.length; i++) {
-    if(todos[i].date[5] === '0') {
+  for (let i = 0; i < todos.length; i++) {
+    if (todos[i].date[5] === '0') {
       todos[i].currentMonth = todos[i].date[6] - 1;
     }
     else {
@@ -88,17 +82,18 @@ function App() {
     todos[i].currentYear = `${todos[i].date[0]}${todos[i].date[1]}${todos[i].date[2]}${todos[i].date[3]}`
     currentYear = `${currentDay[0]}${currentDay[1]}${currentDay[2]}${currentDay[3]}`
   }
-  
-  let todayTodos = useMemo(() => todos.filter(todo => todo.date === currentDay), [todos, currentDay]);
-  let yearTodos = useMemo(() => todos.filter(todo => todo.currentYear === currentYear), [todos, currentYear] );
-  let monthTodos = useMemo(() => yearTodos.filter(todo => todo.currentMonth === currentDate.getMonth()), [yearTodos, currentDate]);
-  let completeTodos = useMemo(() => todos.filter(todo => todo.checked), [todos])
-  let incompleteTodos = useMemo(() => todos.filter(todo => !todo.checked), [todos])
-  
+
+  let todayTodos = todos.filter(todo => todo.date === currentDay);
+  let yearTodos = todos.filter(todo => todo.currentYear === currentYear);
+  let monthTodos = yearTodos.filter(todo => todo.currentMonth === currentDate.getMonth());
+  let completeTodos = todos.filter(todo => todo.checked);
+  let incompleteTodos = todos.filter(todo => !todo.checked);
+
   // Saves the selected todo by it's details/edit button in the corresponding state
-  function showDetails (arr, index) {
+  function showDetails(arr, index) {
     setSelectedToDoDetails(arr[index]);
   };
+
   function showEdit(arr, index) {
     const item = arr[index];
 
@@ -110,45 +105,30 @@ function App() {
   // Saves these variables in local storage each time a change occurs to them
   useEffect(() => {
     localStorage.setItem('todos', JSON.stringify(todos))
-  }, [todos]);
-  useEffect(() => {
-    localStorage.setItem('completeCounter', JSON.stringify(completeCounter))
-  }, [completeCounter]);
-  useEffect(() => {
-    localStorage.setItem('incompleteCounter', JSON.stringify(incompleteCounter))
-  }, [incompleteCounter]);
-  useEffect(() => {
     localStorage.setItem('id', JSON.stringify(currentId))
-  })
-  // if a todo has been selected, each time it gets refreshed, the details/edit menu gets rendered with the correct props
-  // also, the main page content gets disabled and blurred
-  useEffect (() => {
-    if(selectedToDoDetails) {
-    let detailsOverlay = document.getElementsByClassName('details-overlay')[0];
-    detailsOverlay.classList.remove('invisible');
-    let mainPage = document.getElementById('main-page');
-    mainPage.classList.add('blur');
-    mainPage.classList.add('avoid-clicks');
+
+    if (selectedToDoDetails) {
+      let detailsOverlay = document.getElementsByClassName('details-overlay')[0];
+      detailsOverlay.classList.remove('invisible');
+      let mainPage = document.getElementById('main-page');
+      mainPage.classList.add('blur');
+      mainPage.classList.add('avoid-clicks');
     }
-  }, [selectedToDoDetails]);
-  useEffect (() => {
-    if(selectedToDoForEdit) {
-    let editForm = document.getElementsByClassName('edit-form')[0];
-    editForm.classList.add('visible');
-    let mainPage = document.getElementById('main-page');
-    mainPage.classList.add('blur');
-    mainPage.classList.add('avoid-clicks');
+
+    if (selectedToDoForEdit) {
+      let editForm = document.getElementsByClassName('edit-form')[0];
+      editForm.classList.add('visible');
+      let mainPage = document.getElementById('main-page');
+      mainPage.classList.add('blur');
+      mainPage.classList.add('avoid-clicks');
     }
-  }, [selectedToDoForEdit])
+  }, [todos, selectedToDoDetails, selectedToDoForEdit]);
 
   // The function gets the selected todo and deletes it from the main array
-  function deleteToDo (arr, todoIndex) {
-    
-    for(let i = 0; i < arr.length; i++) {
-      if(i === todoIndex) {
+  function deleteToDo(arr, todoIndex) {
+    for (let i = 0; i < arr.length; i++) {
+      if (i === todoIndex) {
         let selectedTodo = arr[i];
-        if  (selectedTodo.checked) {setCompleteCounter(prevCompleteCounter => prevCompleteCounter - 1)}
-        else                       {setIncompleteCounter(prevIncompleteCounter => prevIncompleteCounter - 1)}
         setTodos(todos.filter(todo => todo !== selectedTodo))
       }
     }
@@ -156,88 +136,73 @@ function App() {
 
   // The function gets the selected todo and adds a checked property to it, updating the main array with the modified todo
   function checkTodo(arr, todoIndex) {
-
-    for(let i = 0; i < arr.length; i++) {
-      if(i === todoIndex) {
+    for (let i = 0; i < arr.length; i++) {
+      if (i === todoIndex) {
         let selectedTodo = arr[i]
         selectedTodo.checked = !selectedTodo.checked;
-        if(selectedTodo.checked) {
-          setCompleteCounter(prevCompletedCounter => prevCompletedCounter + 1)
-          setIncompleteCounter(prevUncheckedCounter => prevUncheckedCounter - 1)
-        }
-        else {
-          setCompleteCounter(prevCompletedCounter => prevCompletedCounter - 1)
-          setIncompleteCounter(prevUncheckedCounter => prevUncheckedCounter + 1)
-        }
         setTodos([...todos], todos.splice(todos.indexOf(selectedTodo), 1, selectedTodo))
-      } 
+      }
     }
   }
 
   // Saves the selected array and filter for later use in rendering
-  const shownTodos = useMemo(() => {
-    if     (selectedFilter === 'home')       return todos;
-    else if(selectedFilter === 'today')      return todayTodos;
-    else if(selectedFilter === 'month')      return monthTodos;
-    else if(selectedFilter === 'year')       return yearTodos;
-    else if(selectedFilter === 'complete')   return completeTodos;
-    else if(selectedFilter === 'incomplete') return incompleteTodos;
-  }, [selectedFilter, todos, todayTodos, monthTodos, yearTodos, completeTodos, incompleteTodos])
+  const shownTodos = (() => {
+    if (selectedFilter === 'home') return todos;
+    else if (selectedFilter === 'today') return todayTodos;
+    else if (selectedFilter === 'month') return monthTodos;
+    else if (selectedFilter === 'year') return yearTodos;
+    else if (selectedFilter === 'complete') return completeTodos;
+    else if (selectedFilter === 'incomplete') return incompleteTodos;
+  })();
 
   return (
     <div className="App">
-      <CreateForm 
-      inputTitle={inputTitle}
-      setInputTitle={setInputTitle}
-      inputDetails={inputDetails}
-      setInputDetails={setInputDetails}
-      currentId={currentId}
-      setCurrentId={setCurrentId}
-      date={date}
-      setDate={setDate}
-      todos={todos}
-      setTodos={setTodos}
-      incompleteCounter={incompleteCounter}
-      setIncompleteCounter={setIncompleteCounter}
+      <CreateForm
+        currentId={currentId}
+        setCurrentId={setCurrentId}
+        date={date}
+        setDate={setDate}
+        todos={todos}
+        setTodos={setTodos}
       />
-      {selectedToDoDetails && (<Details  {...selectedToDoDetails} setSelectedToDoDetails={setSelectedToDoDetails}/>)}
+      {selectedToDoDetails && (<Details  {...selectedToDoDetails} setSelectedToDoDetails={setSelectedToDoDetails} />)}
       {selectedToDoForEdit && (<Edit {...selectedToDoForEdit}
-                                selectedToDoForEdit={selectedToDoForEdit}
-                                modifiedToDo={modifiedToDo}
-                                setModifiedToDo={setModifiedToDo}
-                                todos={todos} setTodos={setTodos}
-                                inputEditTitle={inputEditTitle}
-                                setInputEditTitle={setInputEditTitle}
-                                inputEditDetails={inputEditDetails}
-                                setInputEditDetails={setInputEditDetails}
-                                setDate={setDate}
-                                setSelectedToDoForEdit={setSelectedToDoForEdit}
-                                />)}
+        selectedToDoForEdit={selectedToDoForEdit}
+        modifiedToDo={modifiedToDo}
+        setModifiedToDo={setModifiedToDo}
+        todos={todos} setTodos={setTodos}
+        inputEditTitle={inputEditTitle}
+        setInputEditTitle={setInputEditTitle}
+        inputEditDetails={inputEditDetails}
+        setInputEditDetails={setInputEditDetails}
+        setDate={setDate}
+        setSelectedToDoForEdit={setSelectedToDoForEdit}
+      />)}
       <div id='main-page'>
-      <div id='nav-with-add' className='menu-add'>
-          <Nav 
-          completeCounter={completeCounter} 
-          incompleteCounter={incompleteCounter}
-          selectedFilter={selectedFilter}
-          setSelectedFilter={setSelectedFilter}
+        <div id='nav-with-add' className='menu-add'>
+          <Nav
+            selectedFilter={selectedFilter}
+            setSelectedFilter={setSelectedFilter}
+            completeTodos={completeTodos}
+            incompleteTodos={incompleteTodos}
           />
-      </div>
-      <div className='main-content'>
-        <div className={`${selectedFilter} display-show`}>
-          <Head />
-          <div className="to-do-container">
-            {shownTodos.map((todo, index) =>
-            (<ToDo
-              {...todo}
-              key={index}
-              showEdit= {() => showEdit(shownTodos, index)}
-              showDetails={() => showDetails(shownTodos, index)}
-              deleteToDo= {() => deleteToDo(shownTodos, index)}
-              checkTodo={() => checkTodo(shownTodos, index)}
-            />))}
+        </div>
+        <div className='main-content'>
+          <div className={`${selectedFilter} display-show`}>
+            <Head />
+            <div className="to-do-container">
+              {shownTodos.map((todo, index) =>
+              (<ToDo
+                {...todo}
+                key={index}
+                showEdit={() => showEdit(shownTodos, index)}
+                showDetails={() => showDetails(shownTodos, index)}
+                deleteToDo={() => deleteToDo(shownTodos, index)}
+                checkTodo={() => checkTodo(shownTodos, index)}
+              />))}
+            </div>
           </div>
         </div>
-      </div>
       </div>
     </div>
   );
